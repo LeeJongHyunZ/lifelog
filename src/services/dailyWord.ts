@@ -115,9 +115,26 @@ export function getDailyWord(now: Date = new Date()): DailyWord {
   return { ...verse, dateKey };
 }
 
+/**
+ * 출처를 읽기 좋은 말로 바꿈. TTS 가 "3:11" 을 "3시 11분" 으로 읽는 것을 막기 위함.
+ *   "전도서 3:11"   → "전도서 3장 11절"
+ *   "잠언 3:5-6"    → "잠언 3장 5절에서 6절"
+ *   "시편 23:1"     → "시편 23편 1절"
+ */
+export function refToSpeech(ref: string): string {
+  const m = /^(.+?)\s*(\d+)\s*:\s*(\d+)(?:\s*[-~–]\s*(\d+))?\s*$/.exec(ref.trim());
+  if (!m) return ref.replace(/(\d+)\s*:\s*(\d+)/g, "$1장 $2절");
+  const [, book, chapter, firstVerse, lastVerse] = m;
+  const chapterUnit = book.trim().startsWith("시편") ? "편" : "장";
+  const verses = lastVerse ? `${firstVerse}절에서 ${lastVerse}절` : `${firstVerse}절`;
+  return `${book.trim()} ${chapter}${chapterUnit} ${verses}`;
+}
+
 /** 음성으로 읽어줄 전체 대본 */
 export function buildSpeechScript(word: DailyWord): string {
-  return [VOICE_GREETING, word.text, `${word.ref} 말씀이다.`, VOICE_BLESSING].join("\n");
+  return [VOICE_GREETING, word.text, `${refToSpeech(word.ref)} 말씀이다.`, VOICE_BLESSING].join(
+    "\n",
+  );
 }
 
 /** "11월 2일 월요일" 형태 */
