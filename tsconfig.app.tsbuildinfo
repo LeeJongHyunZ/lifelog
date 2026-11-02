@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/services/bibleinterpreter.ts"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/dailywordmodal.tsx","./src/components/heavenbackground.tsx","./src/components/icons.tsx","./src/data/dailyverses.ts","./src/hooks/usegodvoice.ts","./src/services/bibleinterpreter.ts","./src/services/dailyword.ts","./src/services/godvoice.ts"],"version":"5.9.3"}
