@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 640" width="400" height="640" preserveAspectRatio="xMidYMax meet">
+  <defs>
+    <radialGradient id="aura" cx="0.5" cy="0.32" r="0.55">
+      <stop offset="0" stop-color="#fff9e3" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#ffecb8" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#ffecb8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffe9a3" stop-opacity="0.95"/>
+      <stop offset="0.55" stop-color="#ffd36b" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#ffd36b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="robe" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#f8f2e6"/>
+      <stop offset="1" stop-color="#e8dfcb"/>
+    </linearGradient>
+    <linearGradient id="robeInner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5eddc"/>
+      <stop offset="1" stop-color="#dfd3bb"/>
+    </linearGradient>
+    <linearGradient id="sleeveR" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e9e0cc"/>
+    </linearGradient>
+    <linearGradient id="sleeveL" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e9e0cc"/>
+    </linearGradient>
+    <linearGradient id="sash" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d4ab4d"/>
+      <stop offset="0.5" stop-color="#f3d684"/>
+      <stop offset="1" stop-color="#d4ab4d"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e9e4d8"/>
+    </linearGradient>
+    <radialGradient id="handGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff2bf" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#fff2bf" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 후광 (전체 아우라) -->
+  <ellipse cx="200" cy="300" rx="200" ry="330" fill="url(#aura)"/>
+
+  <!-- 머리 뒤 광채 -->
+  <circle cx="200" cy="150" r="82" fill="url(#halo)"/>
+  <circle cx="200" cy="150" r="60" fill="none" stroke="#f3d78c" stroke-opacity="0.8" stroke-width="2.5"/>
+
+  <!-- 긴 머리카락 (뒤) -->
+  <path d="M200 104 C156 104 146 150 150 206 C147 236 158 258 176 270 L224 270 C242 258 253 236 250 206 C254 150 244 104 200 104 Z" fill="url(#hair)"/>
+
+  <!-- 양팔 (벌려서 맞이하는 자세, 몸통 뒤에 그림) -->
+  <path d="M244 220 C268 240 300 290 330 335 L322 352 C310 380 295 400 278 405 C270 370 255 330 238 298 Z" fill="url(#sleeveR)" stroke="#e3d9c3" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M156 220 C132 240 100 290 70 335 L78 352 C90 380 105 400 122 405 C130 370 145 330 162 298 Z" fill="url(#sleeveL)" stroke="#e3d9c3" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- 손 주위 빛 -->
+  <circle cx="334" cy="347" r="34" fill="url(#handGlow)"/>
+  <circle cx="66" cy="347" r="34" fill="url(#handGlow)"/>
+  <!-- 손 (손바닥을 위로) -->
+  <ellipse cx="334" cy="347" rx="14" ry="9" transform="rotate(-38 334 347)" fill="#f4dcc5"/>
+  <ellipse cx="66" cy="347" rx="14" ry="9" transform="rotate(38 66 347)" fill="#f4dcc5"/>
+
+  <!-- 겉옷 (몸통) -->
+  <path d="M150 215 C170 205 230 205 250 215 L302 612 Q200 634 98 612 Z" fill="url(#robe)"/>
+  <!-- 안쪽 옷자락 -->
+  <path d="M184 232 L216 232 L236 614 Q200 622 164 614 Z" fill="url(#robeInner)"/>
+  <!-- 옷 주름 -->
+  <path d="M172 330 C166 420 170 520 160 608" fill="none" stroke="#e1d6bf" stroke-width="2" stroke-linecap="round"/>
+  <path d="M228 330 C234 420 230 520 240 608" fill="none" stroke="#e1d6bf" stroke-width="2" stroke-linecap="round"/>
+  <!-- 금색 허리띠 -->
+  <path d="M158 328 C185 338 215 338 242 328 L244 346 C215 356 185 356 156 346 Z" fill="url(#sash)"/>
+
+  <!-- 수염 -->
+  <path d="M176 170 C170 215 182 258 200 274 C218 258 230 215 224 170 C218 196 182 196 176 170 Z" fill="url(#hair)"/>
+  <!-- 얼굴 -->
+  <ellipse cx="200" cy="152" rx="31" ry="37" fill="#f4dcc5"/>
+  <!-- 머리카락 (앞) -->
+  <path d="M168 142 C170 110 230 110 232 142 C226 126 213 119 200 119 C187 119 174 126 168 142 Z" fill="url(#hair)"/>
+  <!-- 눈썹 -->
+  <path d="M182 141 q 7 -5 14 -1" fill="none" stroke="#e5dccb" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M204 140 q 7 -4 14 1" fill="none" stroke="#e5dccb" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 인자하게 감은 눈 -->
+  <path d="M184 151 q 6 5 12 0" fill="none" stroke="#8a6a50" stroke-width="2" stroke-linecap="round"/>
+  <path d="M204 151 q 6 5 12 0" fill="none" stroke="#8a6a50" stroke-width="2" stroke-linecap="round"/>
+  <!-- 볼 -->
+  <circle cx="181" cy="163" r="5" fill="#f1b7a3" fill-opacity="0.45"/>
+  <circle cx="219" cy="163" r="5" fill="#f1b7a3" fill-opacity="0.45"/>
+  <!-- 미소 -->
+  <path d="M191 175 q 9 7 18 0" fill="none" stroke="#c98b72" stroke-width="2" stroke-linecap="round"/>
+  <!-- 콧수염 -->
+  <path d="M186 167 C190 162 197 164 200 167 C203 164 210 162 214 167 C208 170 203 171 200 170 C197 171 192 170 186 167 Z" fill="url(#hair)"/>
+</svg>

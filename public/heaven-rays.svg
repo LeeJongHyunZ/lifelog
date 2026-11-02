@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <linearGradient id="ray" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff7d9" stop-opacity="0.8"/>
+      <stop offset="0.5" stop-color="#fff7d9" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#fff7d9" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0" r="0.65">
+      <stop offset="0" stop-color="#fffdf2" stop-opacity="1"/>
+      <stop offset="0.3" stop-color="#fff1c9" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#fff1c9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1000" height="1000" fill="url(#sun)"/>
+  <g fill="url(#ray)">
+    <path d="M500 -60 L430 1200 L570 1200 Z" transform="rotate(-38 500 -60)"/>
+    <path d="M500 -60 L455 1200 L545 1200 Z" transform="rotate(-27 500 -60)"/>
+    <path d="M500 -60 L440 1200 L560 1200 Z" transform="rotate(-16 500 -60)"/>
+    <path d="M500 -60 L460 1200 L540 1200 Z" transform="rotate(-6 500 -60)"/>
+    <path d="M500 -60 L450 1200 L550 1200 Z" transform="rotate(5 500 -60)"/>
+    <path d="M500 -60 L435 1200 L565 1200 Z" transform="rotate(15 500 -60)"/>
+    <path d="M500 -60 L458 1200 L542 1200 Z" transform="rotate(26 500 -60)"/>
+    <path d="M500 -60 L428 1200 L572 1200 Z" transform="rotate(37 500 -60)"/>
+  </g>
+</svg>
