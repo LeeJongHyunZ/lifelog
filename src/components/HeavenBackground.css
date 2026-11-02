@@ -27,22 +27,29 @@
   height: 100%;
   object-fit: cover;
   object-position: center top;
-  opacity: 0.9;
+  opacity: 0.7;
   animation: heaven-breathe 9s ease-in-out infinite;
 }
 
-/* 형상은 화면 위쪽 4% 지점부터 74% 높이로. 머리·어깨·벌린 팔이 UI 패널 위에 보이고,
-   옷자락(약 78% 지점)은 구름 속으로 들어감 */
+/* 사진은 화면 위쪽 3% 지점부터 76% 높이로. 얼굴·벌린 팔이 UI 패널 위에 보이고,
+   옷자락은 구름 속으로 들어감. 사각형 테두리가 보이지 않도록 가장자리를 타원형으로 흐림 */
 .heaven__figure {
   position: absolute;
   left: 50%;
-  top: 4%;
-  height: 74%;
+  top: 3%;
+  height: 76%;
   width: auto;
   max-width: none;
   transform: translateX(-50%);
   object-fit: contain;
   object-position: center top;
+  /* 가로 반지름 50% → 사진의 좌우 끝은 완전히 투명, 벌린 손(중심에서 26%)까지는 선명 */
+  -webkit-mask-image: radial-gradient(
+    ellipse 50% 58% at 50% 42%,
+    #000 54%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: radial-gradient(ellipse 50% 58% at 50% 42%, #000 54%, rgba(0, 0, 0, 0) 100%);
 }
 
 .heaven__clouds {
@@ -67,10 +74,10 @@
 @keyframes heaven-breathe {
   0%,
   100% {
-    opacity: 0.72;
+    opacity: 0.5;
   }
   50% {
-    opacity: 1;
+    opacity: 0.8;
   }
 }
 

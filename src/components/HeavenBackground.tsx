@@ -1,8 +1,8 @@
 import "./HeavenBackground.css";
 
-// 화면 전체에 깔리는 배경: 하늘빛 → 빛줄기 → 인자한 하나님 형상 → 구름
+// 화면 전체에 깔리는 배경: 하늘빛 → 빛줄기 → 예수님 사진(public/jesus-figure.jpg) → 구름
 // 모든 요소는 position: fixed 로 고정되고 pointer-events 가 없어 UI 조작을 방해하지 않음
-// 벡터(SVG)라서 Android / iPhone / PC 어떤 해상도에서도 선명함
+// 사진은 CSS mask 로 가장자리를 부드럽게 녹여 하늘 배경과 이어지게 함
 
 const SPARKLES: { left: string; top: string; size: number; delay: string; duration: string }[] = [
   { left: "12%", top: "18%", size: 5, delay: "0s", duration: "7s" },
@@ -33,7 +33,7 @@ export default function HeavenBackground() {
           }}
         />
       ))}
-      <img className="heaven__figure" src="/heaven-figure.svg" alt="" draggable={false} />
+      <img className="heaven__figure" src="/jesus-figure.jpg" alt="" draggable={false} />
       <img className="heaven__clouds" src="/heaven-clouds.svg" alt="" draggable={false} />
     </div>
   );

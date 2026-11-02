@@ -12,8 +12,8 @@ export default defineConfig({
         name: "라이프로그",
         short_name: "라이프로그",
         description: "오늘의 마음을 적으면 성경 말씀으로 해석해 드려요.",
-        theme_color: "#FFF8E8",
-        background_color: "#FFECCB",
+        theme_color: "#F3F8FF",
+        background_color: "#DBE9F9",
         display: "standalone",
         orientation: "portrait",
         start_url: "/",
@@ -35,7 +35,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,ico,webmanifest}"],
+        globPatterns: ["**/*.{js,css,html,svg,png,jpg,jpeg,webp,ico,webmanifest}"],
         navigateFallback: "/index.html",
         runtimeCaching: [
           {

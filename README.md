@@ -61,7 +61,7 @@ VITE_GEMINI_API_KEY=실제_키_값
 | `src/services/godVoice.ts` | 음성 선택(남성 우선), 톤/속도, 자동재생 차단 감지 |
 | `src/hooks/useGodVoice.ts` | 낭독 상태를 React 로 연결 |
 | `src/components/DailyWordModal.tsx` | 입장 시 뜨는 오늘의 말씀 카드 |
-| `src/components/HeavenBackground.tsx` | 빛줄기·하나님 형상·구름 배경 (`public/heaven-*.svg`) |
+| `src/components/HeavenBackground.tsx` | 빛줄기·예수님 사진·구름 배경. 사진은 `public/jesus-figure.jpg` 를 같은 이름으로 바꾸면 교체됨 |
 
 ## 기술 스택
 

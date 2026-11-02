@@ -10,10 +10,11 @@
   --card: rgba(255, 255, 255, 0.78);
   --card-strong: rgba(255, 255, 255, 0.94);
   --border: rgba(120, 95, 50, 0.16);
-  --sky-top: #fff8e8;
-  --sky-mid: #ffeccb;
-  --sky-low: #e8f0ff;
-  --sky-bottom: #d3e4fa;
+  /* 사진의 하늘색과 이어지는 맑은 하늘 팔레트 */
+  --sky-top: #f3f8ff;
+  --sky-mid: #c9ddf5;
+  --sky-low: #dbe9f9;
+  --sky-bottom: #eef5fc;
   --max-width: 480px;
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
     "Pretendard Variable", Pretendard, "Segoe UI", "Malgun Gothic", sans-serif;
