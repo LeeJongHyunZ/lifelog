@@ -1,0 +1,13 @@
+{
+  "name": "lifelog-voice-generator",
+  "private": true,
+  "type": "module",
+  "description": "오늘의 말씀 '하나님 음성' 파일(public/voice/*.mp3)을 만드는 도구. 사이트 빌드와는 별개로, 말씀을 바꿨을 때만 실행합니다.",
+  "scripts": {
+    "generate": "node generate.mjs",
+    "sample": "node generate.mjs --only ecc3-11 --force"
+  },
+  "dependencies": {
+    "msedge-tts": "2.1.1"
+  }
+}

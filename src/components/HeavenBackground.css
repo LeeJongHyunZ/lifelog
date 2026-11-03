@@ -1,4 +1,7 @@
 .heaven {
+  /* 사진 너비: 세로 화면은 가로를 꽉 채우고, 넓은 화면은 높이에 맞춰 가운데에 둠.
+     사진 비율은 1184 x 1664 (0.71). 89vh 면 사진 높이가 화면의 약 1.25배 → 얼굴과 벌린 팔이 위쪽에 옴 */
+  --fig-w: min(100vw, 89vh);
   position: fixed;
   top: 0;
   left: 0;
@@ -13,10 +16,47 @@
   background: linear-gradient(
     180deg,
     var(--sky-top) 0%,
-    var(--sky-mid) 32%,
-    var(--sky-low) 68%,
+    var(--sky-mid) 45%,
+    var(--sky-low) 75%,
     var(--sky-bottom) 100%
   );
+}
+
+/* 넓은 화면에서 사진 양옆을 채우는 흐린 금빛 후광 (같은 사진을 흐리게 1.35배 키운 것).
+   사진 경계에는 후광의 구름 부분이 닿아 색이 이어지고, 후광의 바깥 끝은 크림빛 하늘로 녹아듦 */
+.heaven__glow {
+  --glow-w: calc(var(--fig-w) * 1.35);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("/jesus-glow.jpg");
+  background-repeat: no-repeat;
+  background-size: var(--glow-w) auto;
+  /* 머리 위치가 선명한 사진과 겹치도록 위로 당김: 0.239 × 사진너비 × (1 − 1.35) */
+  background-position: center calc(var(--fig-w) * -0.084);
+  opacity: 0.95;
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent calc(50% - var(--glow-w) / 2),
+      #000 calc(50% - var(--fig-w) * 0.55),
+      #000 calc(50% + var(--fig-w) * 0.55),
+      transparent calc(50% + var(--glow-w) / 2)
+    ),
+    linear-gradient(to bottom, #000 45%, transparent 92%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent calc(50% - var(--glow-w) / 2),
+      #000 calc(50% - var(--fig-w) * 0.55),
+      #000 calc(50% + var(--fig-w) * 0.55),
+      transparent calc(50% + var(--glow-w) / 2)
+    ),
+    linear-gradient(to bottom, #000 45%, transparent 92%);
+  mask-composite: intersect;
 }
 
 .heaven__rays {
@@ -27,29 +67,28 @@
   height: 100%;
   object-fit: cover;
   object-position: center top;
-  opacity: 0.7;
+  opacity: 0.6;
   animation: heaven-breathe 9s ease-in-out infinite;
 }
 
-/* 사진은 화면 위쪽 3% 지점부터 76% 높이로. 얼굴·벌린 팔이 UI 패널 위에 보이고,
-   옷자락은 구름 속으로 들어감. 사각형 테두리가 보이지 않도록 가장자리를 타원형으로 흐림 */
+/* 선명한 사진. 양옆은 살짝, 아래쪽은 길게 녹여서 배경과 이어지게 함 */
 .heaven__figure {
   position: absolute;
   left: 50%;
-  top: 3%;
-  height: 76%;
-  width: auto;
+  top: 0;
+  width: var(--fig-w);
+  height: auto;
   max-width: none;
   transform: translateX(-50%);
-  object-fit: contain;
-  object-position: center top;
-  /* 가로 반지름 50% → 사진의 좌우 끝은 완전히 투명, 벌린 손(중심에서 26%)까지는 선명 */
-  -webkit-mask-image: radial-gradient(
-    ellipse 50% 58% at 50% 42%,
-    #000 54%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  mask-image: radial-gradient(ellipse 50% 58% at 50% 42%, #000 54%, rgba(0, 0, 0, 0) 100%);
+  /* 양옆 4% 만 녹임 → 손끝(6.8%, 95.4% 지점)은 선명하게 남음 */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%),
+    linear-gradient(to bottom, #000 58%, transparent 94%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%),
+    linear-gradient(to bottom, #000 58%, transparent 94%);
+  mask-composite: intersect;
 }
 
 .heaven__clouds {
@@ -60,6 +99,7 @@
   height: 22%;
   object-fit: cover;
   object-position: center bottom;
+  opacity: 0.85;
 }
 
 .heaven__sparkle {
@@ -71,13 +111,26 @@
   animation: heaven-sparkle 7s ease-in-out infinite;
 }
 
+/* 세로 화면(폰): 사진이 가로를 꽉 채우므로 후광은 필요 없고, 양옆도 녹이지 않음 */
+@media (max-aspect-ratio: 89/100) {
+  .heaven__glow {
+    display: none;
+  }
+  .heaven__figure {
+    -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 94%);
+    -webkit-mask-composite: source-over;
+    mask-image: linear-gradient(to bottom, #000 58%, transparent 94%);
+    mask-composite: add;
+  }
+}
+
 @keyframes heaven-breathe {
   0%,
   100% {
-    opacity: 0.5;
+    opacity: 0.45;
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.75;
   }
 }
 
@@ -90,13 +143,6 @@
   50% {
     transform: translateY(-18px) scale(1);
     opacity: 0.95;
-  }
-}
-
-/* 가로 모드 폰처럼 납작한 화면에서는 형상이 UI 뒤에 은은하게 */
-@media (max-height: 480px) {
-  .heaven__figure {
-    opacity: 0.55;
   }
 }
 

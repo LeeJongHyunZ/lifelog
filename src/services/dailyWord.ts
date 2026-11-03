@@ -5,12 +5,10 @@
 //   사람마다 다르지만, 같은 사람은 하루 동안 항상 같은 말씀을 받음 (오늘의 운세 방식)
 // - 고른 결과를 날짜와 함께 캐시해 두어, 말씀 목록이 바뀌어도 그날 안에는 유지됨
 
-import {
-  DAILY_VERSES,
-  VOICE_BLESSING,
-  VOICE_GREETING,
-  type Verse,
-} from "../data/dailyVerses";
+import { DAILY_VERSES, type Verse } from "../data/dailyVerses";
+import { VOICE_FILES } from "../data/voiceManifest";
+
+export { buildSpeechScript, refToSpeech } from "../data/speechScript";
 
 const CLIENT_ID_KEY = "lifelog:clientId";
 const DAILY_WORD_KEY = "lifelog:dailyWord";
@@ -115,26 +113,9 @@ export function getDailyWord(now: Date = new Date()): DailyWord {
   return { ...verse, dateKey };
 }
 
-/**
- * 출처를 읽기 좋은 말로 바꿈. TTS 가 "3:11" 을 "3시 11분" 으로 읽는 것을 막기 위함.
- *   "전도서 3:11"   → "전도서 3장 11절"
- *   "잠언 3:5-6"    → "잠언 3장 5절에서 6절"
- *   "시편 23:1"     → "시편 23편 1절"
- */
-export function refToSpeech(ref: string): string {
-  const m = /^(.+?)\s*(\d+)\s*:\s*(\d+)(?:\s*[-~–]\s*(\d+))?\s*$/.exec(ref.trim());
-  if (!m) return ref.replace(/(\d+)\s*:\s*(\d+)/g, "$1장 $2절");
-  const [, book, chapter, firstVerse, lastVerse] = m;
-  const chapterUnit = book.trim().startsWith("시편") ? "편" : "장";
-  const verses = lastVerse ? `${firstVerse}절에서 ${lastVerse}절` : `${firstVerse}절`;
-  return `${book.trim()} ${chapter}${chapterUnit} ${verses}`;
-}
-
-/** 음성으로 읽어줄 전체 대본 */
-export function buildSpeechScript(word: DailyWord): string {
-  return [VOICE_GREETING, word.text, `${refToSpeech(word.ref)} 말씀이다.`, VOICE_BLESSING].join(
-    "\n",
-  );
+/** 이 말씀의 하나님 음성 파일 주소 (아직 만들지 않은 말씀이면 undefined → 내장 음성으로 읽음) */
+export function voiceUrlFor(id: string): string | undefined {
+  return VOICE_FILES[id];
 }
 
 /** "11월 2일 월요일" 형태 */

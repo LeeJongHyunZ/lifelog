@@ -1,8 +1,9 @@
 import "./HeavenBackground.css";
 
-// 화면 전체에 깔리는 배경: 하늘빛 → 빛줄기 → 예수님 사진(public/jesus-figure.jpg) → 구름
+// 화면 전체에 깔리는 배경
+//   크림빛 하늘 → (넓은 화면만) 흐린 금빛 후광 → 빛줄기 → 예수님 사진 → 아래쪽 구름
 // 모든 요소는 position: fixed 로 고정되고 pointer-events 가 없어 UI 조작을 방해하지 않음
-// 사진은 CSS mask 로 가장자리를 부드럽게 녹여 하늘 배경과 이어지게 함
+// 사진은 public/jesus-figure.jpg, 넓은 화면 양옆을 채우는 흐린 후광은 public/jesus-glow.jpg
 
 const SPARKLES: { left: string; top: string; size: number; delay: string; duration: string }[] = [
   { left: "12%", top: "18%", size: 5, delay: "0s", duration: "7s" },
@@ -18,7 +19,9 @@ const SPARKLES: { left: string; top: string; size: number; delay: string; durati
 export default function HeavenBackground() {
   return (
     <div className="heaven" aria-hidden="true">
+      <div className="heaven__glow" />
       <img className="heaven__rays" src="/heaven-rays.svg" alt="" draggable={false} />
+      <img className="heaven__figure" src="/jesus-figure.jpg" alt="" draggable={false} />
       {SPARKLES.map((s, i) => (
         <span
           key={i}
@@ -33,7 +36,6 @@ export default function HeavenBackground() {
           }}
         />
       ))}
-      <img className="heaven__figure" src="/jesus-figure.jpg" alt="" draggable={false} />
       <img className="heaven__clouds" src="/heaven-clouds.svg" alt="" draggable={false} />
     </div>
   );

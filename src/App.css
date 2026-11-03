@@ -17,6 +17,15 @@
   color: var(--text-secondary);
 }
 
+/* 사진 위 어디에 놓여도 읽히도록 반투명 알약 배경 */
+.app__brand > span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.62);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
 .app__brand-name {
   font-weight: 800;
   letter-spacing: -0.2px;

@@ -8,7 +8,6 @@ type Props = {
   open: boolean;
   word: DailyWord;
   dateLabel: string;
-  speechScript: string;
   voice: GodVoice;
   /** true 면 열리자마자 자동으로 읽기 시도 (사이트 첫 진입) */
   autoPlay: boolean;
@@ -19,25 +18,24 @@ export default function DailyWordModal({
   open,
   word,
   dateLabel,
-  speechScript,
   voice,
   autoPlay,
   onClose,
 }: Props) {
   const primaryRef = useRef<HTMLButtonElement>(null);
-  // speak/stop 은 useCallback 으로 고정된 함수라 effect 의존성으로 안전함
+  // play/stop 은 useCallback 으로 고정된 함수라 effect 의존성으로 안전함
   // (voice 객체 자체는 상태가 바뀔 때마다 새로 만들어지므로 의존성에 넣으면 안 됨)
-  const { status, supported, busy, speak } = voice;
+  const { status, supported, busy, play, stop } = voice;
 
   // 열리면 포커스 이동 + (첫 진입 시) 자동 낭독 시도
   useEffect(() => {
     if (!open) return;
     primaryRef.current?.focus({ preventScroll: true });
     if (!autoPlay || !supported) return;
-    const t = window.setTimeout(() => speak(speechScript), 650);
+    const t = window.setTimeout(() => play(), 650);
     return () => window.clearTimeout(t);
-    // speechScript 가 바뀌는 경우(날짜 변경)에도 다시 읽도록 의존성에 포함
-  }, [open, autoPlay, supported, speechScript, speak]);
+    // 날짜가 바뀌어 새 말씀이 오면 다시 읽도록 dateKey 도 의존성에 포함
+  }, [open, autoPlay, supported, play, word.dateKey]);
 
   // ESC 로 닫기
   useEffect(() => {
@@ -53,13 +51,13 @@ export default function DailyWordModal({
 
   // 자동재생이 막힌 경우: 화면 어디를 탭해도 그 제스처 안에서 읽기 시작
   function onSurfaceClick() {
-    if (status === "blocked" || status === "error") voice.speak(speechScript);
+    if (status === "blocked" || status === "error") play();
   }
 
   function onToggleVoice(e: MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
-    if (busy) voice.stop();
-    else voice.speak(speechScript);
+    if (busy) stop();
+    else play();
   }
 
   function onCloseClick(e: MouseEvent<HTMLButtonElement>) {

@@ -4,8 +4,10 @@ import {
   buildSpeechScript,
   formatDateLabel,
   getDailyWord,
+  voiceUrlFor,
   type DailyWord,
 } from "./services/dailyWord";
+import type { VoiceTrack } from "./services/godVoice";
 import { useGodVoice } from "./hooks/useGodVoice";
 import HeavenBackground from "./components/HeavenBackground";
 import DailyWordModal from "./components/DailyWordModal";
@@ -21,10 +23,20 @@ function App() {
   const [word, setWord] = useState<DailyWord>(() => getDailyWord());
   const [wordOpen, setWordOpen] = useState(true);
   const [autoPlay, setAutoPlay] = useState(true);
-  const voice = useGodVoice();
+
+  // 오늘의 말씀 음성: 미리 만든 하나님 음성 파일, 없으면 내장 음성으로 읽을 대본
+  const track = useMemo<VoiceTrack>(
+    () => ({
+      audioUrl: voiceUrlFor(word.id),
+      text: buildSpeechScript(word),
+      title: "오늘의 말씀",
+      artist: word.ref,
+    }),
+    [word],
+  );
+  const voice = useGodVoice(track);
 
   const dateLabel = useMemo(() => formatDateLabel(new Date()), [word.dateKey]);
-  const speechScript = useMemo(() => buildSpeechScript(word), [word]);
 
   // 탭을 열어둔 채 날짜가 바뀌면 새 말씀으로 교체하고 다시 보여줌
   useEffect(() => {
@@ -58,7 +70,7 @@ function App() {
 
   function toggleListen() {
     if (voice.busy) voice.stop();
-    else voice.speak(speechScript);
+    else voice.play();
   }
 
   async function onSubmit() {
@@ -141,7 +153,6 @@ function App() {
         open={wordOpen}
         word={word}
         dateLabel={dateLabel}
-        speechScript={speechScript}
         voice={voice}
         autoPlay={autoPlay}
         onClose={closeWord}
