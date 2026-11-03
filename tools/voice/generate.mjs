@@ -4,7 +4,10 @@
 //   1. src/data/dailyVerses.ts 의 말씀마다 [인사말 → 말씀 → 출처 → 축복] 대본을 만들고
 //   2. Microsoft Edge 의 무료 한국어 남성 음성으로 문장별 음성을 받은 뒤
 //   3. ffmpeg 로 음높이와 울림통을 낮춰 굵고 중후하게, 성당 같은 울림을 입혀
-//   4. public/voice/<말씀id>.mp3 와 src/data/voiceManifest.ts 를 만듭니다.
+//   4. public/voice/<말씀id>.mp3 를 만들고, 어떤 설정으로 만들었는지 voices.json 에 적어 둡니다.
+//
+// 사이트는 빌드할 때 public/voice 폴더를 읽어서, 음성 파일이 있는 말씀만 오늘의 말씀으로 띄웁니다.
+// 그래서 새로 만든 mp3 를 GitHub 에 올리면 그 말씀부터 오늘의 말씀에 나옵니다.
 //
 // 실행 (이 폴더에서)
 //   npm install                         처음 한 번
@@ -77,7 +80,8 @@ const GENERATOR_VERSION = 1;
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "../..");
 const OUT_DIR = join(ROOT, "public", "voice");
-const MANIFEST_FILE = join(ROOT, "src", "data", "voiceManifest.ts");
+/** 말씀 id → 그 음성을 만든 설정·대본의 해시. 바뀐 말씀만 다시 만들 때 씀 */
+const STATE_FILE = join(HERE, "voices.json");
 const CACHE_DIR = join(HERE, ".cache");
 const TTS_CACHE = join(CACHE_DIR, "tts");
 const WORK_DIR = join(CACHE_DIR, "work");
@@ -479,31 +483,26 @@ async function renderVerse(verse, irFile) {
   }
 }
 
-// ───────────────────────── 목록 파일 ─────────────────────────
+// ───────────────────────── 생성 기록 (voices.json) ─────────────────────────
 
-function readManifest() {
+function readState() {
   const map = new Map();
-  if (!existsSync(MANIFEST_FILE)) return map;
-  const re = /"([^"]+)":\s*"\/voice\/[^"?]+\.mp3\?v=([0-9a-f]+)"/g;
-  for (const m of readFileSync(MANIFEST_FILE, "utf8").matchAll(re)) map.set(m[1], m[2]);
+  if (!existsSync(STATE_FILE)) return map;
+  try {
+    const parsed = JSON.parse(readFileSync(STATE_FILE, "utf8"));
+    for (const [id, hash] of Object.entries(parsed)) if (typeof hash === "string") map.set(id, hash);
+  } catch {
+    console.warn("voices.json 을 읽지 못해서 모든 말씀을 새로 만듭니다.");
+  }
   return map;
 }
 
-function writeManifest(entries) {
-  const lines = DAILY_VERSES.filter((v) => entries.has(v.id)).map(
-    (v) => `  ${JSON.stringify(v.id)}: ${JSON.stringify(`/voice/${v.id}.mp3?v=${entries.get(v.id)}`)},`,
-  );
-  const body = lines.length ? `{\n${lines.join("\n")}\n}` : "{}";
-  writeFileSync(
-    MANIFEST_FILE,
-    [
-      "// 자동 생성 파일입니다. tools/voice 에서 `npm run generate` 를 실행하면 다시 만들어집니다. 직접 고치지 마세요.",
-      "// 말씀 id → 하나님 음성 파일 주소. ?v= 값은 음성이 바뀔 때마다 달라져서 브라우저가 새 파일을 받게 합니다.",
-      "// 여기에 없는 말씀은 브라우저 내장 음성으로 읽습니다.",
-      `export const VOICE_FILES: Record<string, string> = ${body};`,
-      "",
-    ].join("\n"),
-  );
+function writeState(entries) {
+  const ordered = {};
+  for (const v of DAILY_VERSES) if (entries.has(v.id)) ordered[v.id] = entries.get(v.id);
+  const tmp = `${STATE_FILE}.${process.pid}.tmp`;
+  writeFileSync(tmp, `${JSON.stringify(ordered, null, 2)}\n`);
+  renameSync(tmp, STATE_FILE);
 }
 
 // ───────────────────────── 실행 ─────────────────────────
@@ -514,7 +513,7 @@ async function main() {
   const irFile = join(CACHE_DIR, "cathedral-ir.wav");
   writeWavFloat(irFile, makeCathedralIR(DSP.sampleRate), DSP.sampleRate);
 
-  const manifest = readManifest();
+  const state = readState();
   const unknown = ONLY ? [...ONLY].filter((id) => !DAILY_VERSES.some((v) => v.id === id)) : [];
   if (unknown.length) throw new Error(`없는 말씀 id: ${unknown.join(", ")}`);
 
@@ -524,7 +523,7 @@ async function main() {
       JSON.stringify({ GENERATOR_VERSION, VOICE, DSP, PAUSE, parts: speechParts(verse) }),
     ).slice(0, 10);
     const upToDate =
-      !FORCE && manifest.get(verse.id) === hash && existsSync(join(OUT_DIR, `${verse.id}.mp3`));
+      !FORCE && state.get(verse.id) === hash && existsSync(join(OUT_DIR, `${verse.id}.mp3`));
     return { verse, hash, upToDate };
   });
 
@@ -542,7 +541,7 @@ async function main() {
       runLimit(async () => {
         try {
           const { seconds, bytes } = await renderVerse(job.verse, irFile);
-          manifest.set(job.verse.id, job.hash);
+          state.set(job.verse.id, job.hash);
           done++;
           console.log(
             `  [${done}/${todo.length}] ${job.verse.id.padEnd(12)} ${seconds.toFixed(1)}초  ${Math.round(bytes / 1024)}KB`,
@@ -558,7 +557,7 @@ async function main() {
   // 전체 실행일 때만: 목록에서 사라진 말씀의 파일 정리
   if (!ONLY) {
     const valid = new Set(DAILY_VERSES.map((v) => v.id));
-    for (const id of [...manifest.keys()]) if (!valid.has(id)) manifest.delete(id);
+    for (const id of [...state.keys()]) if (!valid.has(id)) state.delete(id);
     for (const f of readdirSync(OUT_DIR)) {
       if (f.endsWith(".mp3") && !valid.has(f.slice(0, -4))) {
         rmSync(join(OUT_DIR, f), { force: true });
@@ -566,12 +565,15 @@ async function main() {
       }
     }
   }
-  // 실패한 말씀은 목록을 건드리지 않음 → 예전에 만든 파일이 있으면 그대로 쓰임
-  writeManifest(manifest);
+  // 실패한 말씀은 기록을 건드리지 않음 → 예전에 만든 파일이 있으면 그대로 쓰임
+  writeState(state);
   const secs = ((Date.now() - started) / 1000).toFixed(0);
   console.log(`완료: ${done}개 생성, 실패 ${failures.length}개, ${secs}초 걸림.`);
+  if (done > 0) {
+    console.log("새로 만든 public/voice 의 mp3 와 voices.json 을 GitHub 에 올리면 사이트에 반영됩니다.");
+  }
   if (failures.length) {
-    console.log(`실패한 말씀은 브라우저 내장 음성으로 읽힙니다. 다시 실행하면 이어서 만듭니다.`);
+    console.log("음성 파일이 없는 말씀은 오늘의 말씀에 나오지 않습니다. 다시 실행하면 이어서 만듭니다.");
     process.exitCode = 1;
   }
 }

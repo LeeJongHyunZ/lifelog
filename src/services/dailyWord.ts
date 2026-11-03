@@ -4,6 +4,7 @@
 // - (clientId + 오늘 날짜) 를 해시해서 말씀을 고르므로
 //   사람마다 다르지만, 같은 사람은 하루 동안 항상 같은 말씀을 받음 (오늘의 운세 방식)
 // - 고른 결과를 날짜와 함께 캐시해 두어, 말씀 목록이 바뀌어도 그날 안에는 유지됨
+// - 하나님 음성 파일이 실제로 올라가 있는 말씀 중에서만 고름
 
 import { DAILY_VERSES, type Verse } from "../data/dailyVerses";
 import { VOICE_FILES } from "../data/voiceManifest";
@@ -14,6 +15,17 @@ const CLIENT_ID_KEY = "lifelog:clientId";
 const DAILY_WORD_KEY = "lifelog:dailyWord";
 
 export type DailyWord = Verse & { dateKey: string };
+
+function hasVoice(id: string): boolean {
+  return Object.prototype.hasOwnProperty.call(VOICE_FILES, id);
+}
+
+/**
+ * 오늘의 말씀 후보: 음성 파일이 있는 말씀만.
+ * 음성 파일이 하나도 없을 때(음성 없이 개발할 때 등)만 전체 말씀에서 고르고 내장 음성으로 읽음.
+ */
+const VOICED_VERSES = DAILY_VERSES.filter((v) => hasVoice(v.id));
+const DAILY_POOL: readonly Verse[] = VOICED_VERSES.length > 0 ? VOICED_VERSES : DAILY_VERSES;
 
 // localStorage 를 못 쓰는 환경(일부 시크릿 모드)에서는 세션 동안만 기억
 let memoryClientId: string | null = null;
@@ -102,20 +114,21 @@ export function getDailyWord(now: Date = new Date()): DailyWord {
 
   const cached = readCache();
   if (cached && cached.dateKey === dateKey) {
-    const found = DAILY_VERSES.find((v) => v.id === cached.id);
+    // 오늘 받은 말씀은 그대로 유지. 음성 파일이 없는 말씀이었을 때만(예전 버전에서 받은 경우) 다시 고름
+    const found = DAILY_POOL.find((v) => v.id === cached.id);
     if (found) return { ...found, dateKey };
   }
 
   const seed = `${getClientId()}|${dateKey}`;
-  const index = fnv1a(seed) % DAILY_VERSES.length;
-  const verse = DAILY_VERSES[index]!;
+  const index = fnv1a(seed) % DAILY_POOL.length;
+  const verse = DAILY_POOL[index]!;
   writeCache({ dateKey, id: verse.id });
   return { ...verse, dateKey };
 }
 
-/** 이 말씀의 하나님 음성 파일 주소 (아직 만들지 않은 말씀이면 undefined → 내장 음성으로 읽음) */
+/** 이 말씀의 하나님 음성 파일 주소 (파일이 없으면 undefined → 내장 음성으로 읽음) */
 export function voiceUrlFor(id: string): string | undefined {
-  return VOICE_FILES[id];
+  return hasVoice(id) ? VOICE_FILES[id] : undefined;
 }
 
 /** "11월 2일 월요일" 형태 */
